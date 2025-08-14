@@ -42,15 +42,21 @@ for url in county_urls:
 
     for row in rows[1:]:
         cells = row.find_all('td')  # Check if cells list is not empty before accessing elements
+        
 
         if cells:
-            year_2020 = cells[0].text.strip()
-            year_2021 = cells[1].text.strip()
-            year_2022 = cells[2].text.strip()
-            year_2023 = cells [3].text.strip()
-            year_2024 = cells [4].text.strip()
+            year_2020 = cells[0].text.strip().replace('.', ',')
+            year_2021 = cells[1].text.strip().replace('.', ',')
+            year_2022 = cells[2].text.strip().replace('.', ',')
+            year_2023 = cells [3].text.strip().replace('.', ',')
+            year_2024 = cells [4].text.strip().replace('.', ',')
             data_out = [year_2020, year_2021, year_2022, year_2023, year_2024]
 
             output_csv.writerow(data_out) # writing data rows
 
     output_file.close() 
+
+
+import pandas
+import glob 
+import os
