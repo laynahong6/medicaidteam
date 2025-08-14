@@ -25,33 +25,32 @@ for url in county_urls:
     req.raise_for_status()
     soup = BeautifulSoup (req.text, 'html.parser')
 
-table = soup.find_all ('table')[2]
+    table = soup.find_all ('table')[2]
 
-rows = table.find_all('tr')
-headers = ('Year 2020', 'Year 2021', 'Year 2022', 'Year 2023', 'Year 2024')
+    rows = table.find_all('tr')
+    headers = ('Year 2020', 'Year 2021', 'Year 2022', 'Year 2023', 'Year 2024')
 
-print(headers)
+    print(headers)
 
-# define county names as extracted from the urls here #
+    county_name = url.split('/')[-1].replace('.html','')
 
-output_file = open('f"{county_name}.csv','w') # file ready for writing
+    output_file = open(f'{county_name}.csv','w') # file ready for writing
 
-output_csv = csv.writer(output_file) # turns file into a csv
+    output_csv = csv.writer(output_file) # turns file into a csv
 
-output_csv.writerow(headers) # writing header row
+    output_csv.writerow(headers) # writing header row
 
+    for row in rows[1:]:
+        cells = row.find_all('td')  # Check if cells list is not empty before accessing elements
 
-for row in rows[1:]:
-    cells = row.find_all('td')  # Check if cells list is not empty before accessing elements
+        if cells:
+            year_2020 = cells[0].text.strip()
+            year_2021 = cells[1].text.strip()
+            year_2022 = cells[2].text.strip()
+            year_2023 = cells [3].text.strip()
+            year_2024 = cells [4].text.strip()
+            data_out = [year_2020, year_2021, year_2022, year_2023, year_2024]
 
-    if cells:
-        year_2020 = cells[0].text.strip()
-        year_2021 = cells[1].text.strip()
-        year_2022 = cells[2].text.strip()
-        year_2023 = cells [3].text.strip()
-        year_2024 = cells [4].text.strip()
-        data_out = [year_2020, year_2021, year_2022, year_2023, year_2024]
+            output_csv.writerow(data_out) # writing data rows
 
-        output_csv.writerow(data_out) # writing data rows
-
-output_file.close() 
+    output_file.close() 
