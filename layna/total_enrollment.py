@@ -13,32 +13,29 @@ table = soup.find ('table')
 links = table.find_all ('a', href=True)
 
 from urllib.parse import urljoin 
-county_urls = [urljoin(base_url, link['href']) for link in links]
+county_urls = [urljoin(base_url, link['href']) for link in links] # do same thing with python strings 
 
 for county_url in county_urls: 
     print(county_url)
 
-county_data = []
+output_file = open('totalenrollment.csv','w') # file ready for writing
+
+output_csv = csv.writer(output_file) # turns file into a csv
+
+headers = ('county_name','Year 2020', 'Year 2021', 'Year 2022', 'Year 2023', 'Year 2024')
+
+output_csv.writerow(headers) # writing header row
 
 for url in county_urls: 
     req = requests.get(url)
-    req.raise_for_status()
+    req.raise_for_status() # tells you if something fails
     soup = BeautifulSoup (req.text, 'html.parser')
 
     table = soup.find_all ('table')[2]
 
     rows = table.find_all('tr')
-    headers = ('Year 2020', 'Year 2021', 'Year 2022', 'Year 2023', 'Year 2024')
-
-    print(headers)
 
     county_name = url.split('/')[-1].replace('.html','')
-
-    output_file = open(f'{county_name}.csv','w') # file ready for writing
-
-    output_csv = csv.writer(output_file) # turns file into a csv
-
-    output_csv.writerow(headers) # writing header row
 
     for row in rows[1:]:
         cells = row.find_all('td')  # Check if cells list is not empty before accessing elements
@@ -50,20 +47,8 @@ for url in county_urls:
             year_2022 = cells[2].text.strip().replace('.', ',')
             year_2023 = cells [3].text.strip().replace('.', ',')
             year_2024 = cells [4].text.strip().replace('.', ',')
-            data_out = [year_2020, year_2021, year_2022, year_2023, year_2024]
+            data_out = [county_name,year_2020, year_2021, year_2022, year_2023, year_2024]
 
             output_csv.writerow(data_out) # writing data rows
 
-    output_file.close() 
-
-
-import pandas
-import glob 
-import os
-
-csv_files = glob.glob ("*.csv")
-
-combined_df = pd.DataFrame()
-
-for file in csv_files: 
-    county_name = os.
+output_file.close() 
