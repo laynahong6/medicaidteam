@@ -1,41 +1,25 @@
-import pandas as pd
 import requests
-import pdfplumber
-import io
-import re
-from tqdm import tqdm
+from bs4 import BeautifulSoup
 
-##read the medicaid rural hospital list
-df_targets = pd.read_csv("/Users/asy/Documents/Medill MSJ/Github/Advanced Journalism/medicaidteam/sinyi/combined_rural_hospital_list.csv")
-df_targets ['Medicaid_ID'] = df_targets['Medicaid_ID'].astype(str)
+#Step 1: Fetch the webpate
+url = "https://hfs.illinois.gov/medicalproviders/costreports/2023medicaidhospitalcaostreports.html"
+response = requests.get(url)
+soup = BeautifulSoup(response.text,'html.parser')
 
-## access the HFS link
-df_all = pd.read_html("https://hfs.illinois.gov/medicalproviders/costreports/2023medicaidhospitalcaostreports.html")[0]
-df_all['Extraced_ID'] = df_all['Report Link'].str.extract(r'23h(\d+)-JD\.pdf')
-df_final_targets = pd.merge(df_targets, df_all, left_on="Medicaid_ID", right_on="Extracted_ID", how="inner")
+#Step 2: Find the container with the PDFs
+pdf_container = soup.find(id='list-949c81eff0')
+print("Container found:", bool(pdf_container))
 
-#processing
-results = []
-for index, row in df_final_targets.iterrows():
-    pdf_bytes = requests.get('https://hfs.illinois.gov' + row['Report Link']).content
+#Step 3: Find all the links
+if pdf_container:
+    pdf_links = pdf_container.find_all('a',href=True)
 
-    with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
-        table1_p2 = pdf.pages[1].extract_tables()[1]
-        total_row_p1 = table1_p2[22]
+    for link in pdf_links:
+        href = link['href']
+        if href.endswith('.pdf'):
+            pdf_url = href if href.startswith('http') else f'https://hfs.illinois.gov{href}'
+            pdf_name = pdf_url.split('/')[-1]
 
-        table2_p2 = pdf.page[1].extract_tables()[2]
-        total_row_p2 = table2_p2[22]
-
-        table_p8 = pdf.pages[7].extract_tables()[1]
-        total_charges = table_p8[12][2]
-
-        results.append({
-            'Medicaid_ID': row['Medicaid_ID'],
-            'Total Charges': total_charges,
-            'Part1 Total Beds': total_row_p1[1],
-            'Part1 Inpatient Days': total_row_p1[4],
-            'Part2 Inpatient Days': total_row_p2[4]
-            })
-        
-#export
-pd.DataFrame(results).to_csv('final_list.csv',index=False)
+            pdf_response = requests.get(pdf_url)
+            with open(pdf_name, 'wb') as f:
+                f.write(pdf_response.content)
