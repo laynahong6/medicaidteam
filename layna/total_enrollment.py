@@ -35,6 +35,7 @@ for url in county_urls:
 
     rows = table.find_all('tr')
 
+    
     county_name = url.split('/')[-1].replace('.html','')
 
     for row in rows[1:]:
