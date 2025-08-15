@@ -1,6 +1,7 @@
 import requests, json
 from bs4 import BeautifulSoup
 import csv
+import pandas as pd
 
 list_page_url = 'https://hfs.illinois.gov/info/factsfigures/program-enrollment/countieslist.html'
 base_url = 'https://hfs.illinois.gov/'
@@ -35,7 +36,6 @@ for url in county_urls:
 
     rows = table.find_all('tr')
 
-    
     county_name = url.split('/')[-1].replace('.html','')
 
     for row in rows[1:]:
@@ -53,3 +53,4 @@ for url in county_urls:
             output_csv.writerow(data_out) # writing data rows
 
 output_file.close() 
+
