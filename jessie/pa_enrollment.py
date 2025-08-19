@@ -70,3 +70,4 @@ fig.add_annotation(
     font=dict(size=14, color="gray"),
 )
 fig.show()
+fig.write_html("pa_medicaid_enrollment.html")
