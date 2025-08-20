@@ -17,6 +17,7 @@ df = pd.DataFrame(data)
 # exclude statewide data
 df = df[df['county_name'] != 'Statewide']
 
+# check data after excluding statewide
 print(df.head(10))
 
 print(df[['year','county_cd','county_name', 'ma_individuals', 'ma_children']])
@@ -29,9 +30,11 @@ df['year'] = pd.to_numeric(df['year'], errors='coerce')
 # filter to only include years 2015-2025
 df_filtered_years = df[(df['year'] >= 2015) & (df['year'] <= 2025)].copy()
 
+# create scatterplot and determine size
 plt.figure(figsize=(12, 8))
 plt.scatter(df_filtered_years['year'], df_filtered_years['ma_individuals'], color='blue', label='MA Individuals')
 
+# label axes
 plt.xlabel('Year')
 plt.ylabel('Enrollment')
 plt.title('PA Medical Assistance Enrollment(2015-2025)')
@@ -41,17 +44,17 @@ plt.show()
 # make chart interactive
 fig = px.scatter(df_filtered_years, x='date', y='ma_individuals', color='county_name',
                  labels={'date':'Year', 'ma_individuals':'Enrollment', 'county_name': 'County'},
-                 title='PA Medicaid Enrollment by County (2015-2025)')
+                 title='Millions of Pa. residents brace for Medicaid impact under federal cuts')
 
 # center the title
 fig.update_layout(title_x=0.5)
 
 # add subheading
 fig.add_annotation(
-    text="Pennsylvania adults' (21+) enrollment in Medicaid, or medical assistance, remain generally stable with slight fluctuations in the last decade.",
+    text="Roughly 3 million Pennsylvanians are enrolled in Medicaid, or what the state calls medical assistance (MA).<br>Gov. Josh Shapiro's office estimated as many as 300,000 people could lose medical coverage under the 'big, beautiful bill.'",
     showarrow=False,
     xref="paper", yref="paper",
-    x=0.5, y=1.05,
+    x=0.5, y=1.05, # position subhed below title & above graph
     align="center",
     xanchor="center",
     yanchor="top",
@@ -60,7 +63,7 @@ fig.add_annotation(
 
 # add source
 fig.add_annotation(
-    text="Source: <a href='https://data.pa.gov/Human-Services/Medical-Assistance-Enrollment-July-2003-Current-Mo/2ght-hfn9/about_data'>" \
+    text="Source: <a href='https://data.pa.gov/Human-Services/Medical-Assistance-Enrollment-July-2003-Current-Mo/2ght-hfn9/about_data'>" # hyperlink to database
     "Pennsylvania Department of Human Services</a>",
     xref="paper", yref="paper",
     x=1, y=-0.1,
