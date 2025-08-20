@@ -54,7 +54,7 @@ fig.add_annotation(
     text="Roughly 3 million Pennsylvanians are enrolled in Medicaid, or what the state calls medical assistance (MA).<br>Gov. Josh Shapiro's office estimated as many as 300,000 people could lose medical coverage under the 'big, beautiful bill.'",
     showarrow=False,
     xref="paper", yref="paper",
-    x=0.5, y=1.05, # position subhed below title & above graph
+    x=0.5, y=1.07, # position subhed below title & above graph
     align="center",
     xanchor="center",
     yanchor="top",
@@ -66,7 +66,7 @@ fig.add_annotation(
     text="Source: <a href='https://data.pa.gov/Human-Services/Medical-Assistance-Enrollment-July-2003-Current-Mo/2ght-hfn9/about_data'>" # hyperlink to database
     "Pennsylvania Department of Human Services</a>",
     xref="paper", yref="paper",
-    x=1, y=-0.1,
+    x=1, y=-0.1, # position source at bottom right
     showarrow=False,
     xanchor="right",
     yanchor="bottom",
