@@ -44,7 +44,7 @@ plt.show()
 # make chart interactive
 fig = px.scatter(df_filtered_years, x='date', y='ma_individuals', color='county_name',
                  labels={'date':'Year', 'ma_individuals':'Enrollment', 'county_name': 'County'},
-                 title='Millions of Pa. residents brace for Medicaid impact under federal cuts')
+                 title='<b>Millions of Pa. residents brace for Medicaid impact under federal cuts</b>')
 
 # center the title
 fig.update_layout(title_x=0.5)
