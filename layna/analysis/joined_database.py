@@ -1,7 +1,7 @@
 import pandas as pd 
 
-df1 = pd.read_csv("layna/FIXED_county_enrollment.csv")
-df2 = pd.read_csv("layna/county_population.csv")
+df1 = pd.read_csv("layna/csv files/county_enrollment.csv")
+df2 = pd.read_csv("layna/csv files/county_population.csv")
 
 merged = pd.merge(df1, df2, on = "County Name", how="inner")
 
