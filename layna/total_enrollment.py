@@ -19,7 +19,7 @@ county_urls = [urljoin(base_url, link['href']) for link in links] # do same thin
 for county_url in county_urls: 
     print(county_url)
 
-output_file = open('totalenrollment.csv','w') # file ready for writing
+output_file = open('county_enrollment.csv','w') # file ready for writing
 
 output_csv = csv.writer(output_file) # turns file into a csv
 
