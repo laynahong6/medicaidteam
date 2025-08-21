@@ -27,6 +27,8 @@ headers = ('County Name','2020 Enrollment', '2021 Enrollment', '2022 Enrollment'
 
 output_csv.writerow(headers) # writing header row
 
+all_rows =[]
+
 for url in county_urls: 
     req = requests.get(url)
     req.raise_for_status() # tells you if something fails
@@ -52,6 +54,14 @@ for url in county_urls:
             year_2024 = clean_text(cells[4].text)
             data_out = [county_name,year_2020, year_2021, year_2022, year_2023, year_2024]
 
-            output_csv.writerow(data_out) # writing data rows
+            #  output_csv.writerow(data_out) # writing data rows
+
+            all_rows.append(data_out)
+
+all_rows.sort(key=lambda x: x[0].lower()) 
+
+for row in all_rows:
+    output_csv.writerow(row)
 
 output_file.close() 
+
