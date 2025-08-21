@@ -30,10 +30,6 @@ driver.quit()
 links = soup.find_all('a', href=True)
 pdf_candidates = [link['href'] for link in links if link['href'].endswith('.pdf')]
 
-print("🔍 所有 PDF 檔名前 10 個：")
-for href in pdf_candidates[:10]:
-    print(os.path.basename(href))
-
 pdf_links = []
 for href in pdf_candidates:
     filename = os.path.basename(href)
