@@ -23,7 +23,7 @@ output_file = open('county_enrollment.csv','w') # file ready for writing
 
 output_csv = csv.writer(output_file) # turns file into a csv
 
-headers = ('County Name','2020', '2021', '2022', '2023', '2024')
+headers = ('County Name','2020 Enrollment', '2021 Enrollment', '2022 Enrollment', '2023 Enrollment', '2024 Enrollment')
 
 output_csv.writerow(headers) # writing header row
 
@@ -41,13 +41,15 @@ for url in county_urls:
     for row in rows[1:]:
         cells = row.find_all('td')  # Check if cells list is not empty before accessing elements
         
+        def clean_text(text): 
+            return text.strip().replace('.','').replace(',','') # removes commas and periods 
 
         if cells:
-            year_2020 = cells[0].text.strip().replace('.', ',')
-            year_2021 = cells[1].text.strip().replace('.', ',')
-            year_2022 = cells[2].text.strip().replace('.', ',')
-            year_2023 = cells [3].text.strip().replace('.', ',')
-            year_2024 = cells [4].text.strip().replace('.', ',')
+            year_2020 = clean_text(cells[0].text)
+            year_2021 = clean_text(cells[1].text)
+            year_2022 = clean_text(cells[2].text)
+            year_2023 = clean_text(cells[3].text)
+            year_2024 = clean_text(cells[4].text)
             data_out = [county_name,year_2020, year_2021, year_2022, year_2023, year_2024]
 
             output_csv.writerow(data_out) # writing data rows

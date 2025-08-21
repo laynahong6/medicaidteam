@@ -15,11 +15,11 @@ filtered_df = illinois_counties[columns_to_keep]
 
 filtered_df = filtered_df.rename(columns={
     'CTYNAME':'County Name',
-    'POPESTIMATE2020':'2020',
-    'POPESTIMATE2021':'2021',
-    'POPESTIMATE2022':'2022',
-    'POPESTIMATE2023':'2023',
-    'POPESTIMATE2024':'2024'
+    'POPESTIMATE2020':'2020 Population Estimate',
+    'POPESTIMATE2021':'2021 Population Estimate',
+    'POPESTIMATE2022':'2022 Population Estimate',
+    'POPESTIMATE2023':'2023 Population Estimate',
+    'POPESTIMATE2024':'2024 Population Estimate'
 })
 
 filtered_df['County Name'] = (
@@ -27,8 +27,9 @@ filtered_df['County Name'] = (
     .str.replace(r'\s*county\s*','', case=False, regex=True)
     .str.strip()             
                             )
+sorted_df = filtered_df.sort_values(by="County Name")
 
-filtered_df.to_csv ('county_population.csv',index=False)
+sorted_df.to_csv ('county_population.csv',index=False)
 
 
 
