@@ -25,10 +25,10 @@ filtered_df = filtered_df.rename(columns={
 filtered_df['County Name'] = (
     filtered_df['County Name']
     .str.replace(r'\s*county\s*','', case=False, regex=True)
-    .str.replace(' ', '', regex=False)                        # remove spaces
-    .str.replace('.', '', regex=False)                        # remove periods
-    .str.lower()                                              # convert to lowercase
-    .str.strip()                                              # remove leading/trailing spaces just in case
+    .str.replace(' ', '', regex=False)  # remove spaces
+    .str.replace('.', '', regex=False)  # remove periods
+    .str.lower()                        # convert to lowercase
+    .str.strip()                        # remove leading/trailing spaces just in case
                 
                             )
 sorted_df = filtered_df.sort_values(by="County Name")
