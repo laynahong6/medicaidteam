@@ -1,7 +1,7 @@
-<h2>PA Medicaid Enrollment by County</h2>
+#PA Medicaid Enrollment by County
 
-<h3>Statement</h3>
-<p>This project seeks to examine the potential impact federal Medicaid cuts have on Pennsylvania counties and analyze underlying trends and patterns in medical assistance enrollment.</p>
+Statement
+This project seeks to examine the potential impact federal Medicaid cuts have on Pennsylvania counties and analyze underlying trends and patterns in medical assistance enrollment.
 
 <h3>Tools</h3>
 <p>Python, Google Sheets</p>
