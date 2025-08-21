@@ -23,7 +23,7 @@ output_file = open('county_enrollment.csv','w') # file ready for writing
 
 output_csv = csv.writer(output_file) # turns file into a csv
 
-headers = ('county_name','Year 2020', 'Year 2021', 'Year 2022', 'Year 2023', 'Year 2024')
+headers = ('County Name','2020', '2021', '2022', '2023', '2024')
 
 output_csv.writerow(headers) # writing header row
 
@@ -53,4 +53,3 @@ for url in county_urls:
             output_csv.writerow(data_out) # writing data rows
 
 output_file.close() 
-
