@@ -7,6 +7,8 @@ merged = pd.merge(df1, df2, on = "County Name", how="inner")
 
 merged["Percentage"] = (merged ["2024 Enrollment"] / merged ["2024 Population Estimate"]) * 100
 
+merged['Percentage'] = merged['Percentage'].apply( lambda x : str(x) + '%')
+
 columns_to_keep = ["County Name", "2024 Enrollment", "2024 Population Estimate", "Percentage"]
 
 merged_filtered = merged [columns_to_keep]
