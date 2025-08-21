@@ -13,7 +13,7 @@ columns_to_keep = ['CTYNAME','ESTIMATESBASE2020','POPESTIMATE2020','POPESTIMATE2
     
 filtered_df = illinois_counties[columns_to_keep]
 
-filtered_df.to_csv ('illinois_census.csv',index=False)
+filtered_df.to_csv ('county_population.csv',index=False)
 
 
 
