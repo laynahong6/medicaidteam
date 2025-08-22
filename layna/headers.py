@@ -1,6 +1,6 @@
 import pandas as pd 
 import csv
-from rapidfuzz import process, fuzz # string matching library for python 
+from rapidfuzz import process, fuzz # string matching library for python (be careful using with larger datasets -- need a human element to fact check)
 
 df1 = pd.read_csv("layna/county_enrollment.csv")
 df2 = pd.read_csv("layna/county_population.csv")
@@ -12,7 +12,7 @@ choices = df2[col2].tolist()
 
 # below is getting best case-insenstive match using rapidfuzz library 
 
-def get_best_match(name, choices, score_cutoff=80):
+def get_best_match(name, choices, score_cutoff=100):
     lower_choices = {c.lower(): c for c in choices} # makes a dictionary so lowercase name -> original name
 
     match = process.extractOne(
