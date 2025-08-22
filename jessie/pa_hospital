@@ -23,3 +23,4 @@ rural_df = df[
 rural_df.to_csv ('PA_rural_hospitals.csv', index=False)
 
 print(rural_df.head(10))
+
