@@ -14,21 +14,25 @@ table = soup.find ('table')
 links = table.find_all ('a', href=True)
 
 from urllib.parse import urljoin 
-county_urls = [urljoin(base_url, link['href']) for link in links] # do same thing with python strings 
+county_urls = [urljoin(base_url, link['href']) for link in links]  
 
 for county_url in county_urls: 
     print(county_url)
 
-output_file = open('county_enrollment.csv','w') # file ready for writing
+# file ready for writing
+output_file = open('county_enrollment.csv','w') 
 
-output_csv = csv.writer(output_file) # turns file into a csv
+# turns file into a csv
+output_csv = csv.writer(output_file) 
 
 headers = ('County Name','2020 Enrollment', '2021 Enrollment', '2022 Enrollment', '2023 Enrollment', '2024 Enrollment')
 
-output_csv.writerow(headers) # writing header row
+# writing header row
+output_csv.writerow(headers) 
 
 all_rows =[]
 
+# below is the data scraping loop 
 for url in county_urls: 
     req = requests.get(url)
     req.raise_for_status() # tells you if something fails
@@ -54,11 +58,10 @@ for url in county_urls:
             year_2024 = clean_text(cells[4].text)
             data_out = [county_name,year_2020, year_2021, year_2022, year_2023, year_2024]
 
-            #  output_csv.writerow(data_out) # writing data rows
-
             all_rows.append(data_out)
 
-all_rows.sort(key=lambda x: x[0].lower()) 
+# sorts rows alphabetically
+all_rows.sort(key=lambda x: x[0].lower())  
 
 for row in all_rows:
     output_csv.writerow(row)

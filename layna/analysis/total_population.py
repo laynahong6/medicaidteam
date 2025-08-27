@@ -5,6 +5,7 @@ import csv
 
 df = pd.read_csv ('layna/censusdata_ALL.csv')
 
+# tells python to keep every row where the state name is 'Illinois' except for when the county name is 'Illinois' (You don't want statewide numbers, only the county)
 illinois = df[df['STNAME'] == 'Illinois']
 
 illinois_counties = illinois[illinois['CTYNAME'] != 'Illinois']
@@ -22,6 +23,7 @@ filtered_df = filtered_df.rename(columns={
     'POPESTIMATE2024':'2024 Population Estimate'
 })
 
+# step below is to standardize county names across both datasets, makes it easier to match columns 
 filtered_df['County Name'] = (
     filtered_df['County Name']
     .str.replace(r'\s*county\s*','', case=False, regex=True)
@@ -31,6 +33,7 @@ filtered_df['County Name'] = (
     .str.strip()                        # remove leading/trailing spaces just in case
                 
                             )
+# sorts alphabetically 
 sorted_df = filtered_df.sort_values(by="County Name")
 
 sorted_df.to_csv ('county_population.csv',index=False)
