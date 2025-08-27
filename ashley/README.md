@@ -12,4 +12,4 @@ URL for Original Dataset - https://data.medicaid.gov/dataset/6165f45b-ca93-5bb5-
 Filted for Illinois URL - https://data.medicaid.gov/dataset/6165f45b-ca93-5bb5-9d06-db29c692a360/data?conditions[0][property]=state_abbreviation&conditions[0][value]=IL&conditions[0][operator]=%3D&conditions[1][property]=total_medicaid_enrollment&conditions[1][value]=0&conditions[1][operator]=%3C%3E
 
 Methodology
-To original dataset, apply filter State Abbreviation is IL. Download filtered data (CSV). Filtered data in Github repo is data-08-27-2025-3_32pm.csv. Alternatively, load dataset from URL above. 
+To original dataset, apply filter State Abbreviation is IL. Download filtered data (CSV). Filtered data in Github repo is data-08-27-2025-3_32pm.csv. Alternatively, load dataset from URL above. Group the data by reporting period. Calculate average enrollment with mean script. Export the results as CSV titled illinois_enrollment.csv. Use this new CSV to plot the summary trends with plot script. Label x and y-axes as Reporting Period and Total Medicaid Enrollment, respectively. Resulting visualization figure is titled illinois_enrollment_trend.
