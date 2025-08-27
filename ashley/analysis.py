@@ -11,10 +11,10 @@ df = pd.read_csv(url)
 # grouping by reporting period and calculating average enrollment
 il_summary = df.groupby("reporting_period")[["total_medicaid_enrollment"]].mean().reset_index()
 
-# saving results/summary to separate csv (for illinois enrollment over certain periods of time)
+# exporting results/summary as separate csv (for illinois enrollment over certain periods of time)
 il_summary.to_csv("data/illinois_enrollment.csv", index=False)
 
-# plotting the trends in results
+# plotting the trends in results and create visualization figure
 plt.figure(figsize=(10,6))
 plt.plot(il_summary["reporting_period"], il_summary["total_medicaid_enrollment"], marker="o")
 plt.title("Total Medicaid Enrollment in Illinois by Reporting Period")
