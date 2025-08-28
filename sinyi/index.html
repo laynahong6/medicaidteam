@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Illinois Rural Hospital Medicaid Shortfall</title>
+    
+    <!-- Load D3.js -->
+    <script src="https://d3js.org/d3.v7.min.js"></script> 
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Illinois Rural Hospital Medicaid Shortfall</h1>
+
+    <!-- Create canvas -->
+    <svg width="960" height="900"></svg> 
+
+    <script>
+        const width = 960;
+        const height = 900;
+
+        const svg = d3.select("svg");
+
+        const projection = d3.geoAlbers()
+            .center([0, 40])
+            .rotate([88, 0])
+            .scale(8000)
+            .translate([width / 2, height / 2]);
+
+        const path = d3.geoPath().projection(projection);
+
+        const colorScale = d3.scaleSequential()
+            .interpolator(d3.interpolateReds);
+
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        const gCounties = svg.append("g").attr("class", "layer-counties"); 
+        const gLabels   = svg.append("g").attr("class", "layer-labels");  
+        const gHospitals= svg.append("g").attr("class", "layer-hospitals"); 
+        const gLegend   = svg.append("g").attr("class", "layer-legend"); 
+
+        // Load hospital data and geojson
+        Promise.all([
+            d3.json("./Illinois_Counties.geojson"),
+            d3.csv("./Il_rural_hospitals_final.csv")
+        ]).then(([geojson, hospitals]) => {
+
+            // Parse hospital data
+            hospitals.forEach(d => {
+                d.lat = +d["Geocodio Latitude"];
+                d.lon = +d["Geocodio Longitude"];
+                d.shortfall = +d["Medicaid shortfall"];
+            });
+
+            colorScale.domain([0, d3.max(hospitals, d => d.shortfall)]);
+
+            // Draw county base map
+            svg.append("g")
+                .selectAll("path")
+                .data(geojson.features)
+                .enter()
+                .append("path")
+                .attr("d", path)
+                .attr("fill", "#f0f0f0")
+                .attr("stroke", "#aaa");
+
+            // ★ 4. County labels at centroids
+            svg.append("g")
+                .selectAll("text")
+                .data(geojson.features)
+                .enter()
+                .append("text")
+                .attr("class", "label") 
+                .attr("x", d => path.centroid(d)[0])
+                .attr("y", d => path.centroid(d)[1])
+                .text(d => d.properties.NAME)
+                .attr("font-size", "8px")
+                .attr("text-anchor", "middle")
+                .attr("fill", "#555");
+
+            // Draw hospital circles (uniform radius)
+            svg.append("g")
+                .selectAll("circle")
+                .data(hospitals)
+                .enter()
+                .append("circle")
+                .attr("cx", d => projection([d.lon, d.lat])[0])
+                .attr("cy", d => projection([d.lon, d.lat])[1])
+                .attr("r", 8) // ★ 2. Fixed radius
+                .attr("fill", d => colorScale(d.shortfall))
+                .attr("stroke", "#333"
+                )
+                .attr("stroke-width", 0.5)
+                // ★ 3. Tooltip follows mouse, includes county
+                .on("mouseover", (event, d) => {
+                    const county = geojson.features.find(f =>
+                        d3.geoContains(f, [d.lon, d.lat])
+                    )?.properties.NAME || "Unknown";
+                    tooltip.style("opacity", 0.9)
+                        .html(
+                            `<strong>${d.NAME}</strong><br>` +
+                            `City: ${d.CITY}<br>` +
+                            `Medicaid Shortfall: $${d.shortfall.toLocaleString()}`
+                        );
+                })
+                .on("mousemove", (event) => {
+                    tooltip
+                        .style("left", (event.pageX + 15) + "px")
+                        .style("top", (event.pageY - 20) + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.style("opacity", 0);
+                });
+
+            // ★ 2. Legend for severity
+            const legendWidth = 200, legendHeight = 10;
+            const legendPadding = 20; 
+
+            const legendSvg = svg.append("g")
+                .attr("transform", `translate(${width - legendWidth - legendPadding}, ${legendPadding})`);
+
+            const defs = svg.append("defs");
+            const linearGradient = defs.append("linearGradient")
+                .attr("id", "legend-gradient");
+
+            linearGradient.selectAll("stop")
+                .data(d3.ticks(0, 1, 10))
+                .enter().append("stop")
+                .attr("offset", d => `${d * 100}%`)
+                .attr("stop-color", d => d3.interpolateReds(d));
+
+            legendSvg.append("rect")
+                .attr("width", legendWidth)
+                .attr("height", legendHeight)
+                .style("fill", "url(#legend-gradient)");
+
+            const legendScale = d3.scaleLinear()
+                .domain(colorScale.domain())
+                .range([0, legendWidth]);
+
+            const legendAxis = d3.axisTop(legendScale)
+                .ticks(5)
+                .tickFormat(d3.format("$.2s"));
+
+            legendSvg.append("g")
+                .attr("transform", `translate(0, 0)`)
+                .call(legendAxis);
+        });
+    </script>
+
+    <style>
+    .tooltip {
+        position: absolute;     
+        pointer-events: none;  
+        background-color: white;
+        padding: 6px 10px;
+        border: 1px solid #333;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #333;
+        z-index: 999;         
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    svg text.label{
+        pointer-events: none;
+    }
+    </style>
+</body>
+</html>
