@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import pandas as pd
 import requests
 
@@ -5,3 +6,6 @@ url = "https://www.aha.org/fact-sheets/2025-06-05-medicaid-spending-reductions-w
 html = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}).text
 df = pd.read_html(html)[0]
 df.to_csv("medicaid_impact.csv", index=False)
+=======
+
+>>>>>>> d9f1ec8897cdecb5e2883aac09adac884f16ad70
