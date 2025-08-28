@@ -10,14 +10,15 @@ Methodolody:
 Acqusition and data cleaning:
 Use tabula.py to extract tables from source pdf.
 Export csv to R for further analysis and visualization.
-Unify name spellings for enrollment data and county population data.
-Add code for each county on both datasets,
+Unify name spellings for enrollment data and county population data. 
+Clean null values. 
+Add code for each county on both datasets.
 Inner join two datasets by county code column. 
 
 Main focus of analysis:
-Find out proportion of population on both Medicaid and Medicare (MMAI). Sort by highest to lowest
-Find out median rates for overall state, urban and rural counties
-Compare dual enrollment rates between rural and urban
+Find out proportion of population on both Medicaid and Medicare (MMAI). Sort by highest to lowest.
+Find out median rates for overall state, urban and rural counties.
+Compare dual enrollment rates between rural and urban.
 Bar graph focuses on urban-rural breakdown of counties with above median dual enrollment rates. 
 
 Notes/caveat:
