@@ -1,0 +1,154 @@
+---
+title: "ILenrollment"
+output: html_document
+date: "2025-08-20"
+---
+
+load libraries:
+
+```{r}
+library("tidyverse")
+library("lubridate")
+library("janitor")
+library("forcats")
+library("rvest")
+library("ggplot2")
+```
+
+load data:
+
+```{r}
+mmaijuly25 <- read_csv("data1/mmaijuly25.csv")
+hcjuly25 <- read_csv("data1/hcjuly25.csv")
+print(mmaijuly25)
+print(hcjuly25)
+```
+
+```{r}
+countypop2020 <- read_csv("data1/ILpopulation.csv")
+print(countypop2020)
+```
+
+clean data:
+
+```{r}
+#cleaning column names:
+mmaijuly25new <- janitor::clean_names(mmaijuly25)
+print(mmaijuly25new)
+hcjuly25new <- janitor::clean_names(hcjuly25)
+print(hcjuly25new)
+```
+
+```{r}
+countypop2020new <- janitor::clean_names(countypop2020)
+print(countypop2020new)
+dfcountypop2020new <- as.data.frame(countypop2020new)
+
+dfcountypop2020new <- dfcountypop2020new %>% select('state_city_county', 'x2020') %>% filter(state_city_county != "Illinois" & state_city_county != "Chicago")
+dfcountypop2020new <- dfcountypop2020new %>% rename(county = state_city_county)
+dfcountypop2020new$countyid <- 1:nrow(dfcountypop2020new)
+dfcountypop2020new <- dfcountypop2020new %>% select(countyid, everything())
+print(dfcountypop2020new)
+
+dfcounty <- dfcountypop2020new %>%
+  mutate(county = case_when( 
+       county == "De Witt" ~ "DeWitt",
+       county == "DeKalb" ~ "Dekalb",
+       county == "Jo Daviess" ~ "JoDaviess",
+       county == "Rock Island" ~ "RockIsland",
+       county == "St. Clair" ~ "StClair",
+       TRUE ~ county))
+print(dfcounty)
+```
+
+
+```{r}
+#tibbles to dfs:
+dfmmaijuly25 <- as.data.frame(mmaijuly25new)
+class(dfmmaijuly25)
+dfhcjuly25 <- as.data.frame(hcjuly25new)
+class(dfhcjuly25)
+
+#replacing NA:
+dfmmaijuly25new <- dfmmaijuly25 %>% mutate_at(c('aetna_better_health', 'blue_cross_blue_shield_of_illinois', 'humana_health_plan', 'meridian_health_plan', 'molina_healthcare'), as.numeric)
+print(dfmmaijuly25new)
+dfmmaijuly25new <- dfmmaijuly25new %>% replace(is.na(.),1)
+print(dfmmaijuly25new)
+
+#new totals:
+dfmmaijuly25new <- dfmmaijuly25new %>% mutate(newcountytotal = aetna_better_health + blue_cross_blue_shield_of_illinois + humana_health_plan + meridian_health_plan + molina_healthcare)
+
+
+```
+
+```{r}
+#add county code column:
+dfmmaijuly25new$countyid <- 1:nrow(dfmmaijuly25new)
+dfmmaijuly25new <- dfmmaijuly25new %>% select(countyid, everything())
+dfmmaijuly25new$countyid[dfmmaijuly25new$county == "Dekalb"] <- 19
+dfmmaijuly25new$countyid[dfmmaijuly25new$county == "DeWitt"] <- 20
+print(dfmmaijuly25new)
+
+
+
+#joining with county population:
+dfmmaijuly25joined <- inner_join(dfmmaijuly25new, dfcounty, by="countyid")
+dfmmaijuly25joined <- dfmmaijuly25joined %>% select(-county.y)
+print(dfmmaijuly25joined) 
+```
+
+1. Proportion of county population on mmai? sort by most to least?
+```{r}
+#add proportion
+dfjoined <- dfmmaijuly25joined %>% mutate(newrate = newcountytotal/x2020)
+print(dfjoined)
+```
+```{r}
+dfjoined %>% select(county.x, x2020, newrate) %>% arrange(desc(newrate))
+```
+McHenry County has the highest rate of residents (roughly 7%) enrolling in both Medicaid and Medicare in July 2025,
+Schuyler County has the lowest rate of residents (less than 1%) enrolling in both insurance plans. 
+
+2. Which insurer was most popular among dual eligible enrollees?
+```{r}
+colSums(dfjoined[, c("aetna_better_health", "blue_cross_blue_shield_of_illinois", "humana_health_plan", "meridian_health_plan", "molina_healthcare")], na.rm = TRUE)
+```
+Blue Cross Blue Shield of Illinois was the most popular with 18504 enrollees. 
+
+3. Rural county mmai average rate vs urban county?
+```{r}
+rural <- dfjoined %>% filter(x2020 < 60000)
+ruralmedian <- median(rural$newrate)
+print(ruralmedian)
+
+urban <- dfjoined %>% filter(x2020 > 60000)
+urbanmedian <- median(urban$newrate)
+print(urbanmedian)
+```
+Rural counties in IL (defined by IL Department of Health as counties with population less than 60,000) have a higher proportion of dual eligible enrollees on average (rate of around 0.0064) than urban counties (rate of around 0.0052). 
+
+4. Among top 10 counties with highest dual eligible enrollment rate, how many are rural? 
+```{r}
+top10 <- dfjoined %>% select(county.x, x2020, newrate) %>% arrange(desc(newrate)) %>% slice_max(newrate, n=10) %>% filter(x2020 < 60000)
+print(top10)
+```
+Nine out of 10 of the counties with highest rates of dual enrollment are rural. 
+
+5. What is the overall median rate of dual eligible enrollment? Data viz of counties with above median rates
+```{r}
+overallmedian <- median(dfjoined$newrate)
+print(overallmedian)
+```
+```{r}
+dfjoined$color <- ifelse(dfjoined$x2020 > 60000, "urban", "rural")
+print(dfjoined)
+```
+```{r}
+dfviz <- dfjoined %>% filter(newrate > 0.006316639)
+print(dfviz)
+
+ggplot(dfviz,
+       aes(x = county.x, y = newrate, fill = color)) + 
+         geom_bar(stat = "identity")
+```
+
